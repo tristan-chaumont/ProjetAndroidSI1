@@ -18,6 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name="si1.ccm.projet.AndroidDatabaseManager"
+                  android:theme="@style/Theme.AppCompat.Light"/>
     </application>
 
 </manifest>
