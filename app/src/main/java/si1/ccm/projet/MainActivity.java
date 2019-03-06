@@ -1,4 +1,4 @@
-package si1.chaumont.projet;
+package si1.ccm.projet;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;

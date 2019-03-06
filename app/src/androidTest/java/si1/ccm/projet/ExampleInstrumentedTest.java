@@ -1,4 +1,4 @@
-package si1.chaumont.projet;
+package si1.ccm.projet;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

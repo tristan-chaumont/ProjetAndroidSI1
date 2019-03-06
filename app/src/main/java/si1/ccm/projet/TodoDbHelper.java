@@ -1,4 +1,4 @@
-package si1.chaumont.projet;
+package si1.ccm.projet;
 
 import android.content.ContentValues;
 import android.content.Context;

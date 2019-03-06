@@ -1,4 +1,4 @@
-package si1.chaumont.projet;
+package si1.ccm.projet;
 
 /**
  * Created by phil on 06/02/17.
