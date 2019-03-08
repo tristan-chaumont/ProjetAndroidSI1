@@ -4,6 +4,8 @@ package si1.ccm.projet;
 //all required import files
 import java.util.ArrayList;
 import java.util.LinkedList;
+
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -404,7 +406,8 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 	            	//the spinnertable has the 3 items to drop , delete , add row to the table selected by the user
 	            	//here we handle the 3 operations.
 	            	spinnertable.setOnItemSelectedListener((new AdapterView.OnItemSelectedListener() {
-	            	    @Override
+	            	    @SuppressLint("ResourceType")
+						@Override
 	            	    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
 
 
@@ -759,6 +762,7 @@ public class AndroidDatabaseManager extends Activity implements OnItemClickListe
 		
 	}
 	//displays alert dialog from which use can update or delete a row 
+	@SuppressLint("ResourceType")
 	public void updateDeletePopup(int row)
 	{
 		Cursor c2=indexInfo.maincursor;
