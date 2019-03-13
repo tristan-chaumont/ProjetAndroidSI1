@@ -16,6 +16,15 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_gravity="center"/>
 
+    <Spinner
+        android:id="@+id/choixTag"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        />
+
     <EditText
         android:id="@+id/nom"
         android:layout_width="match_parent"
@@ -25,17 +34,6 @@
         android:layout_marginLeft="20dp"
         android:inputType="textPersonName"
         android:text="Nom"
-        />
-
-    <EditText
-        android:id="@+id/description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="20dp"
-        android:inputType="textPersonName"
-        android:text="Description"
         />
 
     <Button
