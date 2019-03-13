@@ -3,8 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="si1.ccm.projet.MainActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/action_database"
         android:orderInCategory="100"
         android:title="@string/action_database"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_cleardb"
+        android:orderInCategory="101"
+        android:title="@string/action_cleardb"
         app:showAsAction="never" />
 </menu>
