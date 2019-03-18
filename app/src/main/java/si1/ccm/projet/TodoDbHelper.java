@@ -37,7 +37,8 @@ public class TodoDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        // Rien pour le moment
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TodoContract.TodoEntry.TABLE_NAME);
+        onCreate(sqLiteDatabase);
     }
 
     static ArrayList<TodoItem> getItems(Context context) {
@@ -95,9 +96,30 @@ public class TodoDbHelper extends SQLiteOpenHelper {
         values.put(TodoContract.TodoEntry.COLUMN_NAME_DONE, item.isDone());
 
         // Enregistrement
-        long newRowId = db.insert(TodoContract.TodoEntry.TABLE_NAME, null, values);
+        db.insert(TodoContract.TodoEntry.TABLE_NAME, null, values);
 
         // Ménage
+        dbHelper.close();
+    }
+
+    public void updateItem(TodoItem item, Context context) {
+        TodoDbHelper dbHelper = new TodoDbHelper(context);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(TodoContract.TodoEntry.COLUMN_NAME_LABEL, item.getLabel());
+        values.put(TodoContract.TodoEntry.COLUMN_NAME_TAG, item.getTag().getDesc());
+        values.put(TodoContract.TodoEntry.COLUMN_NAME_DONE, item.isDone());
+        db.update(TodoContract.TodoEntry.TABLE_NAME, values, "label = ?", new String[]{item.getLabel()});
+    }
+
+    static void clearDatabase(Context context){
+        TodoDbHelper dbHelper = new TodoDbHelper(context);
+
+        // Récupération de la base
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        //ContentValues values = new ContentValues();
+        //long newRowId = (long)
+        db.delete(TodoContract.TodoEntry.TABLE_NAME,null, null);
         dbHelper.close();
     }
 

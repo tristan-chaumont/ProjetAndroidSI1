@@ -1,5 +1,6 @@
 package si1.ccm.projet;
 
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +18,16 @@ public class AjouterItem extends AppCompatActivity {
         setContentView(R.layout.activity_ajouter_item);
         Button val = (Button) findViewById(R.id.valider);
         Spinner spin = (Spinner) findViewById(R.id.choixTag);
+
+        FloatingActionButton fab = findViewById(R.id.fab_add);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent activity = new Intent(getBaseContext(), MainActivity.class);
+                startActivity(activity);
+            }
+        });
+
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.choix, android.R.layout.simple_spinner_item);
 // Specify the layout to use when the list of choices appears
@@ -29,8 +40,8 @@ public class AjouterItem extends AppCompatActivity {
                 String nom = (String) ((EditText)findViewById(R.id.nom)).getText().toString();
                 String choix = (String) ((Spinner)findViewById(R.id.choixTag)).getSelectedItem().toString();
                 TodoDbHelper.addItem(new TodoItem(TodoItem.getTagFor(choix),nom),getBaseContext());
-                setResult(RESULT_OK);
-                finish();
+                Intent activity = new Intent(getBaseContext(), MainActivity.class);
+                startActivity(activity);
             }
         });
     }

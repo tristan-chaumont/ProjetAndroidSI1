@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 //        TodoDbHelper.addItem(item, getBaseContext());
 
         // On récupère les items
-        items = TodoDbHelper.getItems(getBaseContext());
+        items = TodoDbHelper.getItems(this);
         Log.i("INIT", "Fin initialisation items");
 
         // On initialise le RecyclerView
@@ -78,8 +78,14 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_database) {
-            Intent dbmanager = new Intent(getBaseContext(), AndroidDatabaseManager.class);
+            Intent dbmanager = new Intent(this, AndroidDatabaseManager.class);
             startActivity(dbmanager);
+        }
+
+        if (id == R.id.action_cleardb) {
+            TodoDbHelper.clearDatabase(getBaseContext());
+            items.clear();
+            recycler.getAdapter().notifyDataSetChanged();
         }
 
         return super.onOptionsItemSelected(item);

@@ -59,7 +59,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
         public void bindTodo(TodoItem todo) {
             label.setText(todo.getLabel());
             sw.setChecked(todo.isDone());
-            switch(todo.getTag()) {
+            switch (todo.getTag()) {
                 case Faible:
                     image.setBackgroundColor(resources.getColor(R.color.faible));
                     break;
@@ -72,6 +72,5 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
 
             }
         }
-
     }
 }
