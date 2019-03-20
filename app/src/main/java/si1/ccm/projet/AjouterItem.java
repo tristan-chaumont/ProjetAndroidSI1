@@ -23,8 +23,7 @@ public class AjouterItem extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent activity = new Intent(getBaseContext(), MainActivity.class);
-                startActivity(activity);
+                finish();
             }
         });
 

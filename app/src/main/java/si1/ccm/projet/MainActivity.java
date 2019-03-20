@@ -40,12 +40,6 @@ public class MainActivity extends AppCompatActivity {
         });
         Log.i("INIT", "Fin initialisation composantes");
 
-        // Test d'ajout d'un item
-//        TodoItem item = new TodoItem(TodoItem.Tags.Important, "Réviser ses cours");
-//        TodoDbHelper.addItem(item, getBaseContext());
-//        item = new TodoItem(TodoItem.Tags.Normal, "Acheter du pain");
-//        TodoDbHelper.addItem(item, getBaseContext());
-
         // On récupère les items
         items = TodoDbHelper.getItems(this);
         Log.i("INIT", "Fin initialisation items");
@@ -121,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
                         TodoDbHelper.updateItem(item, getBaseContext());
                         break;
                 }
+                ItemTouchHelper itemTouchHelper = new ItemTouchHelper()
                 recycler.getAdapter().notifyItemChanged(position);
             }
         };
