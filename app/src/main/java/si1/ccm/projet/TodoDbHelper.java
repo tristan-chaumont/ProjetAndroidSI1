@@ -83,7 +83,7 @@ public class TodoDbHelper extends SQLiteOpenHelper {
         return items;
     }
 
-    static void addItem(TodoItem item, Context context) {
+    static long addItem(TodoItem item, Context context) {
         TodoDbHelper dbHelper = new TodoDbHelper(context);
 
         // Récupération de la base
@@ -96,13 +96,14 @@ public class TodoDbHelper extends SQLiteOpenHelper {
         values.put(TodoContract.TodoEntry.COLUMN_NAME_DONE, item.isDone());
 
         // Enregistrement
-        db.insert(TodoContract.TodoEntry.TABLE_NAME, null, values);
+        long id = db.insert(TodoContract.TodoEntry.TABLE_NAME, null, values);
 
         // Ménage
         dbHelper.close();
+        return id;
     }
 
-    public void updateItem(TodoItem item, Context context) {
+    static void updateItem(TodoItem item, Context context) {
         TodoDbHelper dbHelper = new TodoDbHelper(context);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         ContentValues values = new ContentValues();

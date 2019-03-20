@@ -91,6 +91,13 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int returnCode, Intent data) {
+        items.clear();
+        items.addAll(TodoDbHelper.getItems(getBaseContext()));
+        adapter.notifyDataSetChanged();
+    }
+
     private void setRecyclerViewItemTouchListener() {
         ItemTouchHelper.SimpleCallback itemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -107,9 +114,11 @@ public class MainActivity extends AppCompatActivity {
                 switch(swipeDir) {
                     case ItemTouchHelper.RIGHT:
                         item.setDone(true);
+                        TodoDbHelper.updateItem(item, getBaseContext());
                         break;
                     case ItemTouchHelper.LEFT:
                         item.setDone(false);
+                        TodoDbHelper.updateItem(item, getBaseContext());
                         break;
                 }
                 recycler.getAdapter().notifyItemChanged(position);
