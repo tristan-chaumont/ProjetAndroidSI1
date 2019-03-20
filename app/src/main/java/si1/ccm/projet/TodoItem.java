@@ -19,6 +19,7 @@ public class TodoItem {
         }
     }
 
+    private long id;
     private String label;
     private Tags tag;
     private boolean done;
@@ -30,6 +31,13 @@ public class TodoItem {
     }
 
     public TodoItem(String label, Tags tag, boolean done) {
+        this.label = label;
+        this.tag = tag;
+        this.done = done;
+    }
+
+    public TodoItem(long id, String label, Tags tag, boolean done) {
+        this.id = id;
         this.label = label;
         this.tag = tag;
         this.done = done;
@@ -67,4 +75,8 @@ public class TodoItem {
     public void setLabel(String label) {
         this.label = label;
     }
+
+    public long getId() { return id; }
+
+    public void setId(long id) { this.id = id; }
 }

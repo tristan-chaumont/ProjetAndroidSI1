@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int position = viewHolder.getAdapterPosition();
                 TodoItem item = items.get(position);
-
+                System.out.println(item.getId());
                 switch(swipeDir) {
                     case ItemTouchHelper.RIGHT:
                         item.setDone(true);
@@ -115,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
                         TodoDbHelper.updateItem(item, getBaseContext());
                         break;
                 }
-                ItemTouchHelper itemTouchHelper = new ItemTouchHelper()
                 recycler.getAdapter().notifyItemChanged(position);
             }
         };

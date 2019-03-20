@@ -49,6 +49,7 @@ public class TodoDbHelper extends SQLiteOpenHelper {
 
         // Création de la projection souhaitée
         String[] projection = {
+                TodoContract.TodoEntry._ID,
                 TodoContract.TodoEntry.COLUMN_NAME_LABEL,
                 TodoContract.TodoEntry.COLUMN_NAME_TAG,
                 TodoContract.TodoEntry.COLUMN_NAME_DONE
@@ -72,7 +73,8 @@ public class TodoDbHelper extends SQLiteOpenHelper {
             String label = cursor.getString(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_NAME_LABEL));
             TodoItem.Tags tag = TodoItem.getTagFor(cursor.getString(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_NAME_TAG)));
             boolean done = (cursor.getInt(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_NAME_DONE)) == 1);
-            TodoItem item = new TodoItem(label, tag, done);
+            long id = cursor.getLong(cursor.getColumnIndex(TodoContract.TodoEntry._ID));
+            TodoItem item = new TodoItem(id, label, tag, done);
             items.add(item);
         }
 
@@ -110,7 +112,7 @@ public class TodoDbHelper extends SQLiteOpenHelper {
         values.put(TodoContract.TodoEntry.COLUMN_NAME_LABEL, item.getLabel());
         values.put(TodoContract.TodoEntry.COLUMN_NAME_TAG, item.getTag().getDesc());
         values.put(TodoContract.TodoEntry.COLUMN_NAME_DONE, item.isDone());
-        db.update(TodoContract.TodoEntry.TABLE_NAME, values, "label = ?", new String[]{item.getLabel()});
+        db.update(TodoContract.TodoEntry.TABLE_NAME, values, "_id = " + item.getId(), null);
     }
 
     static void clearDatabase(Context context){
