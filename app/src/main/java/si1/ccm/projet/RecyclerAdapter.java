@@ -1,6 +1,11 @@
 package si1.ccm.projet;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
+import android.database.sqlite.SQLiteDatabase;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -18,9 +24,11 @@ import java.util.ArrayList;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHolder> {
 
     private ArrayList<TodoItem> items;
+    private static Context context;
 
-    public RecyclerAdapter(ArrayList<TodoItem> items) {
+    public RecyclerAdapter(Context contxt, ArrayList<TodoItem> items) {
         this.items = items;
+        context = contxt;
     }
 
     @Override
@@ -40,7 +48,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
         return items.size();
     }
 
-    public static class TodoHolder extends RecyclerView.ViewHolder {
+    public class TodoHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
         private Resources resources;
         private ImageView image;
         private Switch sw;
@@ -54,9 +62,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
             sw = (Switch) itemView.findViewById(R.id.switch1);
             label = (TextView) itemView.findViewById(R.id.textView);
             resources = itemView.getResources();
+            itemView.setOnLongClickListener(this);
         }
 
         public void bindTodo(TodoItem todo) {
+            item = todo;
             label.setText(todo.getLabel());
             sw.setChecked(todo.isDone());
             switch (todo.getTag()) {
@@ -72,5 +82,38 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
 
             }
         }
+
+        @Override
+        public boolean onLongClick(View v) {
+            final View view = v;
+            AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+            builder.setCancelable(true);
+            builder.setTitle("Suppression de la tâche");
+            builder.setMessage("Voulez-vous vraiment supprimer cette tâche ?");
+            builder.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    TodoDbHelper.deleteItem(item, view.getContext());
+                    removeAt(getAdapterPosition());
+                }
+            });
+            builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+            return true;
+        }
+    }
+
+    public void removeAt(int position) {
+        String itemLabel = items.get(position).getLabel();
+        items.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, items.size());
+        Toast.makeText(context, "\"" + itemLabel + "\" a été supprimé",Toast.LENGTH_SHORT).show();
     }
 }

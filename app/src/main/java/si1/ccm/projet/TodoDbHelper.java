@@ -113,6 +113,19 @@ public class TodoDbHelper extends SQLiteOpenHelper {
         values.put(TodoContract.TodoEntry.COLUMN_NAME_TAG, item.getTag().getDesc());
         values.put(TodoContract.TodoEntry.COLUMN_NAME_DONE, item.isDone());
         db.update(TodoContract.TodoEntry.TABLE_NAME, values, "_id = " + item.getId(), null);
+        dbHelper.close();
+    }
+
+    static void deleteItem(TodoItem item, Context context) {
+        TodoDbHelper dbHelper = new TodoDbHelper(context);
+
+        // Récupération de la base
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        db.delete(TodoContract.TodoEntry.TABLE_NAME, "_id = " + item.getId(), null);
+
+        // Ménage
+        dbHelper.close();
     }
 
     static void clearDatabase(Context context){

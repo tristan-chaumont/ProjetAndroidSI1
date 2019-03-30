@@ -1,8 +1,10 @@
 package si1.ccm.projet;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -49,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         manager = new LinearLayoutManager(this);
         recycler.setLayoutManager(manager);
 
-        adapter = new RecyclerAdapter(items);
+        adapter = new RecyclerAdapter(getBaseContext(), items);
         recycler.setAdapter(adapter);
 
         setRecyclerViewItemTouchListener();
