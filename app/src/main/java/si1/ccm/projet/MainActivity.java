@@ -2,6 +2,7 @@ package si1.ccm.projet;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -14,6 +15,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
+import android.widget.Switch;
 
 import java.util.ArrayList;
 
@@ -106,7 +109,6 @@ public class MainActivity extends AppCompatActivity {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int position = viewHolder.getAdapterPosition();
                 TodoItem item = items.get(position);
-                System.out.println(item.getId());
                 switch(swipeDir) {
                     case ItemTouchHelper.RIGHT:
                         item.setDone(true);

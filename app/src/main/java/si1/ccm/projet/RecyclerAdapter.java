@@ -5,12 +5,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,6 +66,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
             label = (TextView) itemView.findViewById(R.id.textView);
             resources = itemView.getResources();
             itemView.setOnLongClickListener(this);
+
+            addOnClickListenerSwitch();
         }
 
         public void bindTodo(TodoItem todo) {
@@ -107,6 +112,32 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
             dialog.show();
             return true;
         }
+
+        public void addOnClickListenerSwitch() {
+            sw.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Switch sw1 = v.findViewById(R.id.switch1);
+                    TodoItem item = items.get(getAdapterPosition());
+                    LinearLayout ll = itemView.findViewById(R.id.layoutRow);
+                    if(sw1.isChecked())
+                        item.setDone(true);
+                    else
+                        item.setDone(false);
+
+                    if(ll == null)
+                        Log.d("RecyclerAdapter", "LinearLayout null Error");
+                    else {
+                        if(item.isDone())
+                            ll.setBackgroundColor(Color.LTGRAY);
+                        else
+                            ll.setBackgroundColor(Color.WHITE);
+                    }
+
+                    TodoDbHelper.updateItem(item, context);
+                }
+            });
+        }
     }
 
     public void removeAt(int position) {
@@ -114,6 +145,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
         items.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, items.size());
-        Toast.makeText(context, "\"" + itemLabel + "\" a été supprimé",Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Supprimé : \"" + itemLabel + "\"",Toast.LENGTH_SHORT).show();
     }
 }
