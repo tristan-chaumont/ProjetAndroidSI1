@@ -8,4 +8,7 @@ Questions traitées :
  - P2
  - O1
  - O2
+ - O3
+ - O4
+ - O5
  - F1
