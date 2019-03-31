@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.Switch;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         recycler.setAdapter(adapter);
 
         setRecyclerViewItemTouchListener();
+
         Log.i("INIT", "Fin initialisation recycler");
     }
 

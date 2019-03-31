@@ -1,5 +1,7 @@
 package si1.ccm.projet;
 
+import java.util.Date;
+
 /**
  * Created by phil on 06/02/17.
  */
@@ -28,6 +30,7 @@ public class TodoItem {
         this.tag = tag;
         this.label = label;
         this.done = false;
+        this.id = 0;
     }
 
     public TodoItem(String label, Tags tag, boolean done) {

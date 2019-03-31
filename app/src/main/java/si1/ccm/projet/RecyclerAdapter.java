@@ -6,12 +6,14 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -73,6 +75,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
         public void bindTodo(TodoItem todo) {
             item = todo;
             label.setText(todo.getLabel());
+            //datePicker.setText(todo.getDate().toString());
             sw.setChecked(todo.isDone());
             switch (todo.getTag()) {
                 case Faible:
@@ -99,7 +102,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     TodoDbHelper.deleteItem(item, view.getContext());
-                    removeAt(getAdapterPosition());
+                    String label = removeAt(getAdapterPosition());
+                    Snackbar.make(view, "Supprimé : " + label, Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 }
             });
             builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
@@ -140,11 +144,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
         }
     }
 
-    public void removeAt(int position) {
+    public String removeAt(int position) {
         String itemLabel = items.get(position).getLabel();
         items.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, items.size());
-        Toast.makeText(context, "Supprimé : \"" + itemLabel + "\"",Toast.LENGTH_SHORT).show();
+        return itemLabel;
     }
 }

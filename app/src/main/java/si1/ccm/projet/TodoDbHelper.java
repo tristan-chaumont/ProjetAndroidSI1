@@ -9,6 +9,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.MatrixCursor;
 import android.util.Log;
 
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
@@ -133,8 +136,7 @@ public class TodoDbHelper extends SQLiteOpenHelper {
 
         // Récupération de la base
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        //ContentValues values = new ContentValues();
-        //long newRowId = (long)
+
         db.delete(TodoContract.TodoEntry.TABLE_NAME,null, null);
         dbHelper.close();
     }
