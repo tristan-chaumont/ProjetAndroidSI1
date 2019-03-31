@@ -1,25 +1,23 @@
 package si1.ccm.projet;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.LinearLayout;
-import android.widget.Switch;
-
+import static android.support.v7.widget.helper.ItemTouchHelper.*;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -99,8 +97,20 @@ public class MainActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
+    enum ButtonState {
+        GONE,
+        LEFT_VISIBLE,
+        RIGHT_VISIBLE
+    }
+
     private void setRecyclerViewItemTouchListener() {
+
         ItemTouchHelper.SimpleCallback itemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+            private boolean swipeBack = false;
+            private ButtonState buttonShowedState = ButtonState.GONE;
+            private static final float buttonWidth = 300;
+
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder viewHolder1) {
                 // Non géré dans cet exemple (ce sont les drags) -> on retourne false
@@ -109,19 +119,92 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                int position = viewHolder.getAdapterPosition();
-                TodoItem item = items.get(position);
-                switch(swipeDir) {
-                    case ItemTouchHelper.RIGHT:
-                        item.setDone(true);
-                        TodoDbHelper.updateItem(item, getBaseContext());
-                        break;
-                    case ItemTouchHelper.LEFT:
-                        item.setDone(false);
-                        TodoDbHelper.updateItem(item, getBaseContext());
-                        break;
+                int position = viewHolder.getPosition();
+
+                if(swipeDir == ItemTouchHelper.LEFT || swipeDir == ItemTouchHelper.RIGHT) {
+                    Intent dbmanager = new Intent(getApplicationContext(), ModifierItem.class);
+                    startActivity(dbmanager);
                 }
-                recycler.getAdapter().notifyItemChanged(position);
+            }
+
+            @Override
+            public int convertToAbsoluteDirection(int flags, int layoutDirection) {
+                if(swipeBack) {
+                    swipeBack = false;
+                    return 0;
+                }
+                return super.convertToAbsoluteDirection(flags, layoutDirection);
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                if (actionState == ACTION_STATE_SWIPE) {
+                    setTouchListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                }
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+
+            public void setTouchListener(final Canvas c, final RecyclerView recyclerView, final RecyclerView.ViewHolder viewHolder,
+                                         final float dX, final float dY, final int actionState, final boolean isCurrentlyActive) {
+                recyclerView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        swipeBack = event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP;
+                        if(swipeBack) {
+                            if(dX < -buttonWidth)
+                                buttonShowedState = ButtonState.RIGHT_VISIBLE;
+                            else if(dX > buttonWidth)
+                                buttonShowedState = ButtonState.LEFT_VISIBLE;
+
+                            if(buttonShowedState != ButtonState.GONE) {
+                                setTouchDownListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                                setItemsClickable(recyclerView, false);
+                            }
+                        }
+                        return false;
+                    }
+                });
+            }
+
+            private void setTouchDownListener(final Canvas c, final RecyclerView recyclerView, final RecyclerView.ViewHolder viewHolder,
+                                              final float dX, final float dY, final int actionState, final boolean isCurrentlyActive) {
+                recyclerView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                            setTouchUpListener(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+                        }
+                        return false;
+                    }
+                });
+            }
+
+            private void setTouchUpListener(final Canvas c, final RecyclerView recyclerView, final RecyclerView.ViewHolder viewHolder,
+                                              final float dX, final float dY, final int actionState, final boolean isCurrentlyActive) {
+                recyclerView.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if(event.getAction() == MotionEvent.ACTION_UP) {
+                            onChildDraw(c, recyclerView, viewHolder, 0F, dY, actionState, isCurrentlyActive);
+                            recyclerView.setOnTouchListener(new View.OnTouchListener() {
+                                @Override
+                                public boolean onTouch(View v, MotionEvent event) {
+                                    return false;
+                                }
+                            });
+                            setItemsClickable(recyclerView, true);
+                            swipeBack = false;
+                            buttonShowedState = ButtonState.GONE;
+                        }
+                        return false;
+                    }
+                });
+            }
+
+            private void setItemsClickable(RecyclerView recyclerView, boolean isClickable) {
+                for(int i = 0; i < recyclerView.getChildCount(); ++i) {
+                    recyclerView.getChildAt(i).setClickable(isClickable);
+                }
             }
         };
 

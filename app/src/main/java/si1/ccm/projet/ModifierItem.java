@@ -1,26 +1,26 @@
 package si1.ccm.projet;
 
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-public class AjouterItem extends AppCompatActivity {
+public class ModifierItem extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ajouter_item);
+        setContentView(R.layout.activity_modifier_item);
 
-        Button val = (Button) findViewById(R.id.valider_add);
-        Spinner spin = (Spinner) findViewById(R.id.choixTag_add);
+        Button val = (Button) findViewById(R.id.valider_mod);
+        Spinner spin = (Spinner) findViewById(R.id.choixTag_mod);
 
-        FloatingActionButton fab = findViewById(R.id.fab_add);
+        FloatingActionButton fab = findViewById(R.id.fab_mod);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -36,14 +36,13 @@ public class AjouterItem extends AppCompatActivity {
         val.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String nom = (String) ((EditText)findViewById(R.id.nom_add)).getText().toString();
-                String choix = (String) ((Spinner)findViewById(R.id.choixTag_add)).getSelectedItem().toString();
+                String nom = (String) ((EditText)findViewById(R.id.nom_mod)).getText().toString();
+                String choix = (String) ((Spinner)findViewById(R.id.choixTag_mod)).getSelectedItem().toString();
 
                 if(nom.isEmpty()) {
                     Snackbar.make(view, "Nom de tâche vide", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 } else {
-                    long itemID = TodoDbHelper.addItem(new TodoItem(TodoItem.getTagFor(choix), nom), getBaseContext());
-                    setResult(itemID == -1 ? -1 : 0);
+                    TodoDbHelper.updateItem(new TodoItem(TodoItem.getTagFor(choix), nom), getBaseContext());
                     finish();
                 }
             }

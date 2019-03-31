@@ -4,21 +4,21 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AjouterItem">
+    tools:context=".ModifierItem">
 
     <TextView
-        android:id="@+id/titre_add"
+        android:id="@+id/titre_mod"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="6dp"
-        android:text="AJOUT"
+        android:text="MODIFICATION"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_gravity="center"/>
 
     <Spinner
-        android:id="@+id/choixTag_add"
-        android:layout_below="@+id/titre_add"
+        android:id="@+id/choixTag_mod"
+        android:layout_below="@+id/titre_mod"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -29,8 +29,8 @@
         />
 
     <EditText
-        android:id="@+id/nom_add"
-        android:layout_below="@+id/choixTag_add"
+        android:id="@+id/nom_mod"
+        android:layout_below="@+id/choixTag_mod"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -70,12 +70,12 @@
     </LinearLayout>
 -->
     <Button
-        android:id="@+id/valider_add"
-        android:layout_below="@+id/nom_add"
+        android:id="@+id/valider_mod"
+        android:layout_below="@+id/nom_mod"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ajouter"
+        android:text="Modifier"
         android:layout_marginTop="100dp"
         android:layout_gravity="center"/>
 

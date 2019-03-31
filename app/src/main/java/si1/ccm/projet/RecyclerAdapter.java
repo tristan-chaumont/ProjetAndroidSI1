@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -123,19 +124,19 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
                 public void onClick(View v) {
                     Switch sw1 = v.findViewById(R.id.switch1);
                     TodoItem item = items.get(getAdapterPosition());
-                    LinearLayout ll = itemView.findViewById(R.id.layoutRow);
+                    CardView cv = itemView.findViewById(R.id.layoutRow);
                     if(sw1.isChecked())
                         item.setDone(true);
                     else
                         item.setDone(false);
 
-                    if(ll == null)
+                    if(cv == null)
                         Log.d("RecyclerAdapter", "LinearLayout null Error");
                     else {
                         if(item.isDone())
-                            ll.setBackgroundColor(Color.LTGRAY);
+                            cv.setBackgroundColor(Color.LTGRAY);
                         else
-                            ll.setBackgroundColor(Color.WHITE);
+                            cv.setBackgroundColor(Color.WHITE);
                     }
 
                     TodoDbHelper.updateItem(item, context);
