@@ -14,4 +14,5 @@ Questions traitées :
  - O5
  
  - F1
- - F2 : Difficulté de le gérer avec le swipe. Est donc uniquement fonctionnel lorsque l'on clique sur le switch.
+ - F2
+ - F5 : Problème au lancement de l'appli certaines fois. La colonne echeance n'est pas détectée, il faut donc supprimer la database (nous avons la commande dans le MainActivity) puis relancer l'appli.

@@ -1,9 +1,7 @@
 package si1.ccm.projet;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -16,8 +14,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import static android.support.v7.widget.helper.ItemTouchHelper.*;
 import java.util.ArrayList;
+
+import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_SWIPE;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,6 +44,14 @@ public class MainActivity extends AppCompatActivity {
         Log.i("INIT", "Fin initialisation composantes");
 
         // On récupère les items
+
+        /* A faire si l'application ne démarre pas du premier coup. Je n'ai pas réussi à trouver d'où venait le problème.
+        Il faut exécuter une fois l'application en décommentant la ligne ci-dessous, puis la réexécuter en commentant cette même ligne. */
+
+        //getBaseContext().deleteDatabase(TodoDbHelper.DATABASE_NAME);
+
+
+
         items = TodoDbHelper.getItems(this);
         Log.i("INIT", "Fin initialisation items");
 
@@ -56,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         adapter = new RecyclerAdapter(getBaseContext(), items);
         recycler.setAdapter(adapter);
 
-        setRecyclerViewItemTouchListener();
+        //setRecyclerViewItemTouchListener();
 
         Log.i("INIT", "Fin initialisation recycler");
     }
@@ -103,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         RIGHT_VISIBLE
     }
 
-    private void setRecyclerViewItemTouchListener() {
+    /*private void setRecyclerViewItemTouchListener() {
 
         ItemTouchHelper.SimpleCallback itemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
@@ -119,12 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                int position = viewHolder.getPosition();
 
-                if(swipeDir == ItemTouchHelper.LEFT || swipeDir == ItemTouchHelper.RIGHT) {
-                    Intent dbmanager = new Intent(getApplicationContext(), ModifierItem.class);
-                    startActivity(dbmanager);
-                }
             }
 
             @Override
@@ -180,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             private void setTouchUpListener(final Canvas c, final RecyclerView recyclerView, final RecyclerView.ViewHolder viewHolder,
-                                              final float dX, final float dY, final int actionState, final boolean isCurrentlyActive) {
+                                            final float dX, final float dY, final int actionState, final boolean isCurrentlyActive) {
                 recyclerView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
@@ -210,5 +212,5 @@ public class MainActivity extends AppCompatActivity {
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchCallback);
         itemTouchHelper.attachToRecyclerView(recycler);
-    }
+    }*/
 }

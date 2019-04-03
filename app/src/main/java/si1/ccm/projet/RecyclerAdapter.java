@@ -3,17 +3,23 @@ package si1.ccm.projet;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,6 +27,11 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 /**
@@ -31,10 +42,23 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
 
     private ArrayList<TodoItem> items;
     private static Context context;
+    private OnItemSelectedListener listener;
+    private boolean withContextMenu;
+
+    public interface OnItemSelectedListener {
+        void onSelected(TodoItem item);
+        void onMenuAction(TodoItem todoItem, MenuItem menuItem);
+    }
 
     public RecyclerAdapter(Context contxt, ArrayList<TodoItem> items) {
         this.items = items;
         context = contxt;
+    }
+
+    public RecyclerAdapter(ArrayList<TodoItem> items, OnItemSelectedListener listener, boolean withContextMenu) {
+        this.listener = listener;
+        this.items = items;
+        this.withContextMenu = withContextMenu;
     }
 
     @Override
@@ -58,7 +82,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
         private Resources resources;
         private ImageView image;
         private Switch sw;
-        private TextView label;
+        private TextView label, echeance;
         private TodoItem item;
 
         public TodoHolder(View itemView) {
@@ -68,15 +92,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
             sw = (Switch) itemView.findViewById(R.id.switch1);
             label = (TextView) itemView.findViewById(R.id.textView);
             resources = itemView.getResources();
-            itemView.setOnLongClickListener(this);
+            echeance = (TextView) itemView.findViewById(R.id.echeance);
 
+            itemView.setOnLongClickListener(this);
             addOnClickListenerSwitch();
         }
 
         public void bindTodo(TodoItem todo) {
             item = todo;
             label.setText(todo.getLabel());
-            //datePicker.setText(todo.getDate().toString());
             sw.setChecked(todo.isDone());
             switch (todo.getTag()) {
                 case Faible:
@@ -88,8 +112,19 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
                 case Important:
                     image.setBackgroundColor(resources.getColor(R.color.important));
                     break;
+                default :
+                    break;
+            }
+
+            String date = null;
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy - HH:mm");
+            sdf.setLenient(false);
+            try {
+                date = sdf.format(item.getDate());
+            } catch(Exception e) {
 
             }
+            echeance.setText(date);
         }
 
         @Override
@@ -117,6 +152,48 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
             dialog.show();
             return true;
         }
+
+        /*@Override
+        public void onClick(final View v) {
+            PopupMenu popupMenu = new PopupMenu(v.getContext(), itemView);
+
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem i) {
+                    switch(i.getItemId()) {
+                        case R.id.popup_modifier :
+                            Intent dbmanager = new Intent(context, ModifierItem.class);
+                            context.startActivity(dbmanager);
+                            return true;
+                        case R.id.popup_supprimer :
+                            TodoDbHelper.deleteItem(item, v.getContext());
+                            String label = removeAt(getAdapterPosition());
+                            Snackbar.make(v, "Supprimé : " + label, Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                            return true;
+                        default :
+                            return false;
+                    }
+                }
+            });
+            popupMenu.inflate(R.menu.item_popup);
+
+            try {
+                Field[] fields = popupMenu.getClass().getDeclaredFields();
+                for(Field field : fields) {
+                    if("mPopup".equals(field.getName())) {
+                        field.setAccessible(true);
+                        Object menuPopupHelper = field.get(popupMenu);
+                        Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
+                        Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
+                        setForceIcons.invoke(menuPopupHelper, true);
+                        break;
+                    }
+                }
+            } catch(Exception e) {
+
+            }
+            popupMenu.show();
+        }*/
 
         public void addOnClickListenerSwitch() {
             sw.setOnClickListener(new View.OnClickListener() {

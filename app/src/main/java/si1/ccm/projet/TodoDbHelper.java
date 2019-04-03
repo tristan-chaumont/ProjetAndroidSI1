@@ -27,7 +27,8 @@ public class TodoDbHelper extends SQLiteOpenHelper {
                     TodoContract.TodoEntry._ID + " INTEGER PRIMARY KEY," +
                     TodoContract.TodoEntry.COLUMN_NAME_LABEL + " TEXT," +
                     TodoContract.TodoEntry.COLUMN_NAME_TAG + " TEXT,"  +
-                    TodoContract.TodoEntry.COLUMN_NAME_DONE +  " INTEGER)";
+                    TodoContract.TodoEntry.COLUMN_NAME_DONE +  " INTEGER," +
+                    TodoContract.TodoEntry.COLUMN_NAME_ECHEANCE + " DATE)";
 
     public TodoDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -39,7 +40,7 @@ public class TodoDbHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + TodoContract.TodoEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
@@ -55,7 +56,8 @@ public class TodoDbHelper extends SQLiteOpenHelper {
                 TodoContract.TodoEntry._ID,
                 TodoContract.TodoEntry.COLUMN_NAME_LABEL,
                 TodoContract.TodoEntry.COLUMN_NAME_TAG,
-                TodoContract.TodoEntry.COLUMN_NAME_DONE
+                TodoContract.TodoEntry.COLUMN_NAME_DONE,
+                TodoContract.TodoEntry.COLUMN_NAME_ECHEANCE
         };
 
         // Requête
@@ -77,7 +79,16 @@ public class TodoDbHelper extends SQLiteOpenHelper {
             TodoItem.Tags tag = TodoItem.getTagFor(cursor.getString(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_NAME_TAG)));
             boolean done = (cursor.getInt(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_NAME_DONE)) == 1);
             long id = cursor.getLong(cursor.getColumnIndex(TodoContract.TodoEntry._ID));
-            TodoItem item = new TodoItem(id, label, tag, done);
+
+            Date date = null;
+            try {
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy' 'HH:mm");
+                date = format.parse(cursor.getString(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_NAME_ECHEANCE)));
+            } catch(ParseException e) {
+
+            }
+
+            TodoItem item = new TodoItem(id, label, tag, done, date);
             items.add(item);
         }
 
@@ -99,6 +110,16 @@ public class TodoDbHelper extends SQLiteOpenHelper {
         values.put(TodoContract.TodoEntry.COLUMN_NAME_LABEL, item.getLabel());
         values.put(TodoContract.TodoEntry.COLUMN_NAME_TAG, item.getTag().getDesc());
         values.put(TodoContract.TodoEntry.COLUMN_NAME_DONE, item.isDone());
+
+        String date = null;
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy' 'HH:mm");
+        format.setLenient(false);
+        try {
+            date = format.format(item.getDate());
+        } catch(Exception e) {
+
+        }
+        values.put(TodoContract.TodoEntry.COLUMN_NAME_ECHEANCE, date);
 
         // Enregistrement
         long id = db.insert(TodoContract.TodoEntry.TABLE_NAME, null, values);
