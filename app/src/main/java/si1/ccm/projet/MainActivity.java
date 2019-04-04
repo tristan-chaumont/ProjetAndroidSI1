@@ -1,16 +1,16 @@
 package si1.ccm.projet;
 
 import android.content.Intent;
-import android.graphics.Canvas;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,14 +18,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_SWIPE;
-
 public class MainActivity extends AppCompatActivity {
 
     private ArrayList<TodoItem> items;
     private RecyclerView recycler;
     private LinearLayoutManager manager;
     private RecyclerAdapter adapter;
+    private final static String CHANNEL_ID = "channel1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,15 +44,13 @@ public class MainActivity extends AppCompatActivity {
         });
         Log.i("INIT", "Fin initialisation composantes");
 
-        // On récupère les items
-
         /* A faire si l'application ne démarre pas du premier coup. Je n'ai pas réussi à trouver d'où venait le problème.
         Il faut exécuter une fois l'application en décommentant la ligne ci-dessous, puis la réexécuter en commentant cette même ligne. */
 
         //getBaseContext().deleteDatabase(TodoDbHelper.DATABASE_NAME);
 
 
-
+        // On récupère les items
         items = TodoDbHelper.getItems(this);
         Log.i("INIT", "Fin initialisation items");
 
@@ -80,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         setRecyclerViewItemTouchListener();
 
         Log.i("INIT", "Fin initialisation recycler");
+
     }
 
     @Override
@@ -157,12 +155,13 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) { }
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+            }
 
             @Override
             public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
-                int swipeFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+                //int swipeFlags = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
                 return makeMovementFlags(dragFlags, 0);
             }
         };
