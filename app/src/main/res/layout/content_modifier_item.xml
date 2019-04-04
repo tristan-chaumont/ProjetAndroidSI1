@@ -16,6 +16,15 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:layout_gravity="center"/>
 
+    <TextView
+        android:id="@+id/label_mod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_below="@+id/titre_mod"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"/>
+
     <Spinner
         android:id="@+id/choixTag_mod"
         android:layout_below="@+id/titre_mod"
@@ -41,37 +50,43 @@
         android:inputType="textPersonName"
         android:hint="Nom de la tâche"
         />
-<!--
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
-        android:id="@+id/choixDate"
-        android:layout_below="@+id/nom">
+        android:id="@+id/choixDate_mod"
+        android:layout_below="@+id/nom_mod">
 
         <EditText
-            android:id="@+id/datepicker"
+            android:id="@+id/datepicker_mod"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginRight="50dp"
             android:layout_marginLeft="50dp"
+            android:clickable="true"
+            android:editable="false"
+            android:focusable="false"
             android:hint="DATE"/>
 
         <EditText
-            android:id="@+id/timepicker"
+            android:id="@+id/timepicker_mod"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginRight="50dp"
             android:layout_marginLeft="50dp"
+            android:clickable="true"
+            android:editable="false"
+            android:focusable="false"
             android:hint="HEURE"/>
 
     </LinearLayout>
--->
+
     <Button
         android:id="@+id/valider_mod"
-        android:layout_below="@+id/nom_mod"
+        android:layout_below="@+id/choixDate_mod"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

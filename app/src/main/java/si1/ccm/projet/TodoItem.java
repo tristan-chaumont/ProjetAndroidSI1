@@ -1,12 +1,13 @@
 package si1.ccm.projet;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by phil on 06/02/17.
  */
 
-public class TodoItem {
+public class TodoItem implements Serializable {
 
     public enum Tags {
         Faible("Faible"), Normal("Normal"), Important("Important");
@@ -26,12 +27,14 @@ public class TodoItem {
     private Tags tag;
     private boolean done;
     private Date date;
+    private long position;
 
     public TodoItem(Tags tag, String label) {
         this.tag = tag;
         this.label = label;
         this.done = false;
         this.id = 0;
+        this.position = 0;
     }
 
     public TodoItem(String label, Tags tag, boolean done) {
@@ -46,6 +49,7 @@ public class TodoItem {
         this.tag = tag;
         this.done = done;
         this.date = date;
+        this.position = id;
     }
 
     public TodoItem(Tags tag, String label, Date date) {
@@ -95,4 +99,8 @@ public class TodoItem {
     public Date getDate() { return date; }
 
     public void setDate(Date date) { this.date = date; }
+
+    public long getPosition() { return position; }
+
+    public void setPosition(long position) { this.position = position; }
 }

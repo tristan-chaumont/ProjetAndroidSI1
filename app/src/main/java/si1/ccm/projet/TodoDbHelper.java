@@ -19,7 +19,7 @@ import java.util.ArrayList;
  */
 
 public class TodoDbHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "todo.db";
 
     private static final String SQL_CREATE_ENTRIES =
@@ -28,7 +28,8 @@ public class TodoDbHelper extends SQLiteOpenHelper {
                     TodoContract.TodoEntry.COLUMN_NAME_LABEL + " TEXT," +
                     TodoContract.TodoEntry.COLUMN_NAME_TAG + " TEXT,"  +
                     TodoContract.TodoEntry.COLUMN_NAME_DONE +  " INTEGER," +
-                    TodoContract.TodoEntry.COLUMN_NAME_ECHEANCE + " DATE)";
+                    TodoContract.TodoEntry.COLUMN_NAME_ECHEANCE + " DATE," +
+                    TodoContract.TodoEntry.COLUMN_NAME_POSTITION + " INTEGER)";
 
     public TodoDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -57,7 +58,8 @@ public class TodoDbHelper extends SQLiteOpenHelper {
                 TodoContract.TodoEntry.COLUMN_NAME_LABEL,
                 TodoContract.TodoEntry.COLUMN_NAME_TAG,
                 TodoContract.TodoEntry.COLUMN_NAME_DONE,
-                TodoContract.TodoEntry.COLUMN_NAME_ECHEANCE
+                TodoContract.TodoEntry.COLUMN_NAME_ECHEANCE,
+                TodoContract.TodoEntry.COLUMN_NAME_POSTITION
         };
 
         // Requête
@@ -79,6 +81,7 @@ public class TodoDbHelper extends SQLiteOpenHelper {
             TodoItem.Tags tag = TodoItem.getTagFor(cursor.getString(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_NAME_TAG)));
             boolean done = (cursor.getInt(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_NAME_DONE)) == 1);
             long id = cursor.getLong(cursor.getColumnIndex(TodoContract.TodoEntry._ID));
+            long position = cursor.getInt(cursor.getColumnIndex(TodoContract.TodoEntry.COLUMN_NAME_POSTITION));
 
             Date date = null;
             try {
@@ -136,6 +139,17 @@ public class TodoDbHelper extends SQLiteOpenHelper {
         values.put(TodoContract.TodoEntry.COLUMN_NAME_LABEL, item.getLabel());
         values.put(TodoContract.TodoEntry.COLUMN_NAME_TAG, item.getTag().getDesc());
         values.put(TodoContract.TodoEntry.COLUMN_NAME_DONE, item.isDone());
+
+        String date = null;
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy' 'HH:mm");
+        format.setLenient(false);
+        try {
+            date = format.format(item.getDate());
+        } catch(Exception e) {
+
+        }
+        values.put(TodoContract.TodoEntry.COLUMN_NAME_ECHEANCE, date);
+
         db.update(TodoContract.TodoEntry.TABLE_NAME, values, "_id = " + item.getId(), null);
         dbHelper.close();
     }

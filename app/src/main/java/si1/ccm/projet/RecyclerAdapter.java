@@ -1,11 +1,10 @@
 package si1.ccm.projet;
 
-import android.content.ContentValues;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
@@ -13,21 +12,13 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -41,24 +32,11 @@ import java.util.ArrayList;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHolder> {
 
     private ArrayList<TodoItem> items;
-    private static Context context;
-    private OnItemSelectedListener listener;
-    private boolean withContextMenu;
+    private static Activity activity;
 
-    public interface OnItemSelectedListener {
-        void onSelected(TodoItem item);
-        void onMenuAction(TodoItem todoItem, MenuItem menuItem);
-    }
-
-    public RecyclerAdapter(Context contxt, ArrayList<TodoItem> items) {
+    public RecyclerAdapter(Activity a, ArrayList<TodoItem> items) {
         this.items = items;
-        context = contxt;
-    }
-
-    public RecyclerAdapter(ArrayList<TodoItem> items, OnItemSelectedListener listener, boolean withContextMenu) {
-        this.listener = listener;
-        this.items = items;
-        this.withContextMenu = withContextMenu;
+        activity = a;
     }
 
     @Override
@@ -68,14 +46,91 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
     }
 
     @Override
-    public void onBindViewHolder(TodoHolder holder, int position) {
-        TodoItem it = items.get(position);
+    public void onBindViewHolder(final TodoHolder holder, int position) {
+        final TodoItem it = items.get(position);
         holder.bindTodo(it);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                //on crée un menu popup
+                PopupMenu popup = new PopupMenu(activity, holder.itemView);
+
+                //inflate
+                popup.inflate(R.menu.item_popup);
+
+                //on ajoute le click listener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        switch (menuItem.getItemId()) {
+                            case R.id.popup_modifier :
+                                Intent dbmanager = new Intent(activity, ModifierItem.class);
+                                dbmanager.putExtra("position", it);
+                                activity.startActivityForResult(dbmanager, 0);
+                                break;
+                            case R.id.popup_supprimer :
+                                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                                builder.setCancelable(true);
+                                builder.setTitle("Suppression de la tâche");
+                                builder.setMessage("Voulez-vous vraiment supprimer cette tâche ?");
+                                builder.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        TodoDbHelper.deleteItem(it, v.getContext());
+                                        String label = removeAt(holder.getAdapterPosition());
+                                        Snackbar.make(v, "Supprimé : " + label, Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                                    }
+                                });
+                                builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+                                AlertDialog dialog = builder.create();
+                                dialog.show();
+                                break;
+                        }
+                        return false;
+                    }
+                });
+
+                //on crée les icones sur le popup
+                try {
+                    Field[] fields = popup.getClass().getDeclaredFields();
+                    for (Field field : fields) {
+                        if ("mPopup".equals(field.getName())) {
+                            field.setAccessible(true);
+                            Object menuPopupHelper = field.get(popup);
+                            Class<?> classPopupHelper = Class.forName(menuPopupHelper
+                                    .getClass().getName());
+                            Method setForceIcons = classPopupHelper.getMethod(
+                                    "setForceShowIcon", boolean.class);
+                            setForceIcons.invoke(menuPopupHelper, true);
+                            break;
+                        }
+                    }
+                } catch (Exception e) {
+
+                }
+
+                //on affiche le popup
+                popup.show();
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public String removeAt(int position) {
+        String itemLabel = items.get(position).getLabel();
+        items.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, items.size());
+        return itemLabel;
     }
 
     public class TodoHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
@@ -95,7 +150,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
             echeance = (TextView) itemView.findViewById(R.id.echeance);
 
             itemView.setOnLongClickListener(this);
-            addOnClickListenerSwitch();
+            addOnClickListenerOnSwitch();
         }
 
         public void bindTodo(TodoItem todo) {
@@ -124,6 +179,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
             } catch(Exception e) {
 
             }
+            CardView cv = itemView.findViewById(R.id.layoutRow);
+            if(todo.isDone())
+                cv.setBackgroundColor(Color.LTGRAY);
+            else
+                cv.setBackgroundColor(Color.WHITE);
             echeance.setText(date);
         }
 
@@ -153,49 +213,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
             return true;
         }
 
-        /*@Override
-        public void onClick(final View v) {
-            PopupMenu popupMenu = new PopupMenu(v.getContext(), itemView);
-
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem i) {
-                    switch(i.getItemId()) {
-                        case R.id.popup_modifier :
-                            Intent dbmanager = new Intent(context, ModifierItem.class);
-                            context.startActivity(dbmanager);
-                            return true;
-                        case R.id.popup_supprimer :
-                            TodoDbHelper.deleteItem(item, v.getContext());
-                            String label = removeAt(getAdapterPosition());
-                            Snackbar.make(v, "Supprimé : " + label, Snackbar.LENGTH_LONG).setAction("Action", null).show();
-                            return true;
-                        default :
-                            return false;
-                    }
-                }
-            });
-            popupMenu.inflate(R.menu.item_popup);
-
-            try {
-                Field[] fields = popupMenu.getClass().getDeclaredFields();
-                for(Field field : fields) {
-                    if("mPopup".equals(field.getName())) {
-                        field.setAccessible(true);
-                        Object menuPopupHelper = field.get(popupMenu);
-                        Class<?> classPopupHelper = Class.forName(menuPopupHelper.getClass().getName());
-                        Method setForceIcons = classPopupHelper.getMethod("setForceShowIcon", boolean.class);
-                        setForceIcons.invoke(menuPopupHelper, true);
-                        break;
-                    }
-                }
-            } catch(Exception e) {
-
-            }
-            popupMenu.show();
-        }*/
-
-        public void addOnClickListenerSwitch() {
+        public void addOnClickListenerOnSwitch() {
             sw.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -216,17 +234,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
                             cv.setBackgroundColor(Color.WHITE);
                     }
 
-                    TodoDbHelper.updateItem(item, context);
+                    TodoDbHelper.updateItem(item, activity);
                 }
             });
         }
-    }
-
-    public String removeAt(int position) {
-        String itemLabel = items.get(position).getLabel();
-        items.remove(position);
-        notifyItemRemoved(position);
-        notifyItemRangeChanged(position, items.size());
-        return itemLabel;
     }
 }
