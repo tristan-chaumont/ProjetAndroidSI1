@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 import static android.support.v7.widget.helper.ItemTouchHelper.ACTION_STATE_SWIPE;
 
@@ -55,6 +56,18 @@ public class MainActivity extends AppCompatActivity {
 
         items = TodoDbHelper.getItems(this);
         Log.i("INIT", "Fin initialisation items");
+
+        Collections.sort(items, new Comparator<TodoItem>() {
+            @Override
+            public int compare(TodoItem o1, TodoItem o2) {
+                if(o1.getPosition() < o2.getPosition())
+                    return -1;
+                else if(o1.getPosition() > o2.getPosition())
+                    return 1;
+                else
+                    return 0;
+            }
+        });
 
         // On initialise le RecyclerView
         recycler = (RecyclerView) findViewById(R.id.recycler);
@@ -113,10 +126,8 @@ public class MainActivity extends AppCompatActivity {
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder viewHolder1) {
                 int fromPosition = viewHolder.getAdapterPosition();
                 int toPosition = viewHolder1.getAdapterPosition();
-                TodoItem item = items.get(fromPosition);
-
                 onItemMoved(fromPosition, toPosition);
-
+                changeItemPosition(fromPosition, toPosition);
                 return true;
             }
 
@@ -131,6 +142,18 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 adapter.notifyItemMoved(fromPosition, toPosition);
+            }
+
+            private void changeItemPosition(int anciennePosition, int nouvellePosition) {
+                TodoItem item1 = items.get(anciennePosition);
+                TodoItem item2 = items.get(nouvellePosition);
+
+                int positionItem1 = (int) item1.getPosition();
+                item1.setPosition(item2.getPosition());
+                TodoDbHelper.updatePosition(item1, getBaseContext());
+
+                item2.setPosition(positionItem1);
+                TodoDbHelper.updatePosition(item2, getBaseContext());
             }
 
             @Override

@@ -45,6 +45,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
         return new TodoHolder(inflatedView);
     }
 
+    public void decalerPosition(int position) {
+        for(TodoItem item : items) {
+            if(item.getPosition() > position) {
+                long pos = item.getPosition();
+                item.setPosition(pos - 1);
+            }
+        }
+    }
+
     @Override
     public void onBindViewHolder(final TodoHolder holder, int position) {
         final TodoItem it = items.get(position);
@@ -76,8 +85,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
                                 builder.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        TodoDbHelper.deleteItem(it, v.getContext());
+                                        TodoDbHelper.deleteItem(it, activity);
                                         String label = removeAt(holder.getAdapterPosition());
+                                        decalerPosition((int) it.getPosition());
                                         Snackbar.make(v, "Supprimé : " + label, Snackbar.LENGTH_LONG).setAction("Action", null).show();
                                     }
                                 });
@@ -133,7 +143,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
         return itemLabel;
     }
 
-    public class TodoHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
+    public class TodoHolder extends RecyclerView.ViewHolder {
         private Resources resources;
         private ImageView image;
         private Switch sw;
@@ -149,7 +159,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
             resources = itemView.getResources();
             echeance = (TextView) itemView.findViewById(R.id.echeance);
 
-            itemView.setOnLongClickListener(this);
+            //itemView.setOnLongClickListener(this);
             addOnClickListenerOnSwitch();
         }
 
@@ -187,7 +197,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
             echeance.setText(date);
         }
 
-        @Override
+        /*@Override
         public boolean onLongClick(View v) {
             final View view = v;
             AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
@@ -211,7 +221,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.TodoHo
             AlertDialog dialog = builder.create();
             dialog.show();
             return true;
-        }
+        }*/
 
         public void addOnClickListenerOnSwitch() {
             sw.setOnClickListener(new View.OnClickListener() {

@@ -14,11 +14,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-/**
- * Created by phil on 11/02/17.
- */
-
 public class TodoDbHelper extends SQLiteOpenHelper {
+    public static int positionItem = 1;
+
     public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "todo.db";
 
@@ -90,8 +88,15 @@ public class TodoDbHelper extends SQLiteOpenHelper {
             } catch(ParseException e) {
 
             }
-
-            TodoItem item = new TodoItem(id, label, tag, done, date);
+            TodoItem item;
+            if(position == 0) {
+                item = new TodoItem(id, label ,tag, done, date, positionItem);
+                positionItem++;
+            } else {
+                item = new TodoItem(id, label, tag, done, date, position);
+            }
+            if(positionItem <= item.getPosition())
+                positionItem = (int) item.getPosition() + 1;
             items.add(item);
         }
 
@@ -123,6 +128,9 @@ public class TodoDbHelper extends SQLiteOpenHelper {
 
         }
         values.put(TodoContract.TodoEntry.COLUMN_NAME_ECHEANCE, date);
+
+        values.put(TodoContract.TodoEntry.COLUMN_NAME_POSTITION, positionItem);
+        positionItem++;
 
         // Enregistrement
         long id = db.insert(TodoContract.TodoEntry.TABLE_NAME, null, values);
@@ -161,8 +169,24 @@ public class TodoDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         db.delete(TodoContract.TodoEntry.TABLE_NAME, "_id = " + item.getId(), null);
+        positionItem--;
+        db.execSQL("UPDATE " + TodoContract.TodoEntry.TABLE_NAME + " SET position = position - 1 WHERE position > " + item.getPosition());
 
         // Ménage
+        dbHelper.close();
+    }
+
+    static void updatePosition(TodoItem item, Context context) {
+        TodoDbHelper dbHelper = new TodoDbHelper(context);
+
+        // Récupération de la base
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(TodoContract.TodoEntry.COLUMN_NAME_POSTITION, item.getPosition());
+        db.update(TodoContract.TodoEntry.TABLE_NAME, values, "_id = " + item.getId(), null);
+
         dbHelper.close();
     }
 
@@ -173,6 +197,7 @@ public class TodoDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         db.delete(TodoContract.TodoEntry.TABLE_NAME,null, null);
+        positionItem = 1;
         dbHelper.close();
     }
 

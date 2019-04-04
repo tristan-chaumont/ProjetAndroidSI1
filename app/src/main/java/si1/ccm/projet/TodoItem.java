@@ -29,27 +29,13 @@ public class TodoItem implements Serializable {
     private Date date;
     private long position;
 
-    public TodoItem(Tags tag, String label) {
-        this.tag = tag;
-        this.label = label;
-        this.done = false;
-        this.id = 0;
-        this.position = 0;
-    }
-
-    public TodoItem(String label, Tags tag, boolean done) {
-        this.label = label;
-        this.tag = tag;
-        this.done = done;
-    }
-
-    public TodoItem(long id, String label, Tags tag, boolean done, Date date) {
+    public TodoItem(long id, String label, Tags tag, boolean done, Date date, long position) {
         this.id = id;
         this.label = label;
         this.tag = tag;
         this.done = done;
         this.date = date;
-        this.position = id;
+        this.position = position;
     }
 
     public TodoItem(Tags tag, String label, Date date) {
